@@ -3,7 +3,6 @@ import json
 import requests
 from generic_menu import init_menu, get_menu
 from cfg import VERIFY_STRING, PAT
-from persistent_menu import CART_PAYLOAD, MENU_PAYLOAD
 import postback_types
 
 app = Flask(__name__)
