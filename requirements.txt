@@ -5,3 +5,4 @@ itsdangerous==0.24
 Jinja2==2.9.6
 MarkupSafe==1.0
 Werkzeug==0.12.1
+redis==2.10.5
