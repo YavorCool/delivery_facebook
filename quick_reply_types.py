@@ -1,0 +1,1 @@
+QR_PROUDCT_COUNT = 'qr_product_count'
