@@ -5,8 +5,13 @@ from generic_menu import init_menu, get_menu
 from quick_reply_menu import get_quick_reply_menu
 from cfg import VERIFY_STRING, PAT
 import postback_types, quick_reply_types
+from cart import Cart
+from products_data import get_product_by_id
+from cart_reciept_template import get_cart_receipt_template
 
 app = Flask(__name__)
+
+msg_url = 'https://graph.facebook.com/v2.6/me/messages/?access_token=' + PAT
 
 
 @app.route('/', methods=['GET'])
@@ -35,9 +40,12 @@ def handle_messages():
 
                     if payload['type'] == postback_types.PERSISTENT_MENU_BUTTON:
                         if payload['name'] == 'cart':
-                            send_text(sender_id, 'cart btn pressed')
+                            send_cart(Cart(sender_id))
                         elif payload['name'] == 'menu':
                             send_menu(sender_id)
+                        elif payload['name'] == 'clear_cart':
+                            clear_cart(Cart(sender_id))
+                            send_text(sender_id, 'Корзина успешно очищена')
 
                     elif payload['type'] == postback_types.PRODUCTS_MENU_BUTTON:
                         send_quick_reply_menu(sender_id, payload['id'])
@@ -49,9 +57,9 @@ def handle_messages():
                     print("messaging event:" , messaging_event)
                     payload = json.loads(messaging_event['message']['quick_reply']['payload'])
                     if payload['type'] == quick_reply_types.QR_PROUDCT_COUNT:
-                        count = messaging_event['message']['text']
-                        send_text(sender_id, "product id: {}, count : {}".format(payload['id'], count))
-
+                        count = int(messaging_event['message']['text'])
+                        add_to_cart(Cart(sender_id), get_product_by_id(payload['id']), count)
+                        send_text(sender_id, "Товар успешно добавлен в корзину")
                 else:
                     message_text = messaging_event['message']['text']
                     send_text(sender_id, message_text)
@@ -61,20 +69,46 @@ def handle_messages():
 
 def send_text(recipient, text):
     payload = {'recipient': {'id': recipient}, 'message': {'text': text}}
-    r = requests.post('https://graph.facebook.com/v2.6/me/messages/?access_token=' + PAT, json=payload)
+    r = requests.post(msg_url, json=payload)
     print("Send text post: " + r.text)
 
 
 def send_menu(recipient):
     payload = {'recipient': {'id': recipient}, 'message': get_menu()}
-    r = requests.post('https://graph.facebook.com/v2.6/me/messages?access_token=' + PAT, json=payload)
+    r = requests.post(msg_url, json=payload)
     print("Send menu post: " + r.text)
 
 
 def send_quick_reply_menu(recipient, product_id, count=10):
-    payload = get_quick_reply_menu(recipient, product_id, count)
-    r = requests.post('https://graph.facebook.com/v2.6/me/messages?access_token=' + PAT, json=payload)
+    r = requests.post(msg_url, json=get_quick_reply_menu(recipient, product_id, count))
     print("Send quick_reply post: " + r.text)
+
+
+def send_cart(cart):
+    r = requests.post(msg_url, json=get_cart_receipt_template(cart))
+    print("Sended cart: " + r.text)
+
+
+def get_cart(user_id):
+    return Cart(user_id)
+
+
+def add_to_cart(cart, product, count):
+    for item in cart.items:
+        if item['product']['id'] == product['id']:
+            item['count'] += count
+            cart.write_to_db()
+            return item
+    item = {"product": product, "count": int(count)}
+    cart.items.append(item)
+    cart.write_to_db()
+    return item
+
+
+def clear_cart(cart):
+    cart.items = []
+    cart.write_to_db()
+
 
 if __name__ == "__main__":
     init_menu()
