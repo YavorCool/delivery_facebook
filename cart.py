@@ -1,6 +1,8 @@
 import redis
 import json
 
+#Корзина, ее сериализация и десериализация
+
 
 class Cart:
     def __init__(self, user_id):

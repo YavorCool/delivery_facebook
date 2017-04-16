@@ -1,5 +1,6 @@
 from products_data import product_payload, products
 
+# Формирование меню с продуктами, пока из products_data
 
 menu_elements = []
 

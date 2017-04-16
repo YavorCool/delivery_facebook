@@ -3,6 +3,10 @@ from quick_reply_types import QR_PROUDCT_COUNT
 payload = '{"type":"' + QR_PROUDCT_COUNT + '", "id": "%s"}'
 
 
+# Возвращает словарь для POST запроса на создания меню с быстрым ответом с цифрами от 1 до 10,
+# также туда пробрасывается id выбранного продукта в payload
+
+
 def get_quick_reply_menu(recipient, product_id, count=10):
 
     replies = []

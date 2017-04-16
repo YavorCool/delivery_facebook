@@ -25,6 +25,11 @@ def handle_verification():
         return 'Error, wrong validation token'
 
 
+# В зависимости от типа сообщения postback, quickreply, или текст выбирается подтип сообщения, например для postback
+# есть кнопки из persistent_menu, есть кнопки из generic_menu с продуктами, подтипы передаются в payload, определены
+# в соответствующих файлах
+
+
 @app.route('/', methods=['POST'])
 def handle_messages():
     data = request.get_json()

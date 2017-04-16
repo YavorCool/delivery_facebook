@@ -1,3 +1,5 @@
+#Возвращает словарь для POSt запроса на создание receipt_template  с корзиной
+
 
 def get_cart_receipt_template(cart):
     elements = []

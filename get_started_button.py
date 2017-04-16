@@ -1,5 +1,8 @@
 import requests
 from cfg import PAT
+
+#Запустил скрипт - Сделал кнопку НАЧАТЬ
+
 payload = {
   "get_started": {
       "payload": '{"type": "get_started_button"}'

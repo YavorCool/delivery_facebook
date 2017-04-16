@@ -1,8 +1,11 @@
+# Скрипт формирует запрос на создание persistent_menu, при запуске отсылает его
+
 import requests
 from cfg import PAT
 import postback_types
 
 
+# Payload для Postback
 CART_PAYLOAD = '{"type": "%s", "name": "cart"}' % postback_types.PERSISTENT_MENU_BUTTON
 MENU_PAYLOAD = '{"type": "%s", "name": "menu"}' % postback_types.PERSISTENT_MENU_BUTTON
 CLEAR_CART_PAYLOAD = '{"type": "%s", "name": "clear_cart"}' % postback_types.PERSISTENT_MENU_BUTTON
