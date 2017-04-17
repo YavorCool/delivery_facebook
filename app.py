@@ -66,8 +66,7 @@ def handle_messages():
                         add_to_cart(Cart(sender_id), get_product_by_id(payload['id']), count)
                         send_text(sender_id, "Товар успешно добавлен в корзину")
                 else:
-                    message_text = messaging_event['message']['text']
-                    send_text(sender_id, message_text)
+                    send_text(sender_id, "Выберите пункт Меню, чтобы сделать заказ")
 
     return "OK"
 
@@ -90,8 +89,11 @@ def send_quick_reply_menu(recipient, product_id, count=10):
 
 
 def send_cart(cart):
-    r = requests.post(msg_url, json=get_cart_receipt_template(cart))
-    print("Sended cart: " + r.text)
+    if cart.items.__len__() != 0:
+        r = requests.post(msg_url, json=get_cart_receipt_template(cart))
+        print("Sended cart: " + r.text)
+    else:
+        send_text(cart.user_id, "Ваша корзина пуста")
 
 
 def get_cart(user_id):
